@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ICS 211 - React/JSX Template</title>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    
+    <script type="text/babel">
+
+    class ComputerQuestionaire extends React.Component {
+
+      constructor(props) {
+        super(props);
+          this.handleOSCheck = this.handleOSCheck.bind(this);
+          this.handleCompCheck = this.handleCompCheck.bind(this);
+          this.handleSubmit = this.handleSubmit.bind(this);
+          this.handleText = this.handleText.bind(this);
+          this.state = {
+            checkboxGroup: {
+            linux: false,
+            windows: false,
+            macOS: false
+            },
+            radioGroup: {
+            laptop: false,
+            desktop: false
+            },
+            message: ''
+        }
+      }
+
+      handleText(event) {
+        this.setState({
+          message: event.target.value
+        })
+      }
+
+      handleOSCheck(event) {
+        let checkboxes = Object.assign(this.state.checkboxGroup);
+        checkboxes[event.target.value] = event.target.checked;
+        this.setState({
+          checkboxGroup: checkboxes
+        });
+      }
+      
+      handleCompCheck(event) {
+        let radioButtons = {};
+        radioButtons[event.target.value] = event.target.checked;
+        this.setState({
+          radioGroup: radioButtons
+        });
+      }
+
+      handleSubmit(event) {
+        event.preventDefault();
+        this.setState({
+          displayResults: true
+        });
+      }
+
+      render() {
+        if (this.state.displayResults) {
+          return (
+            <DisplayResults os={this.state.checkboxGroup} comp={this.state.radioGroup} msg={this.state.message}/>
+          );
+        } 
+        else {
+          return (
+          <form onSubmit={this.handleSubmit}>
+            <fieldset>
+              <legend>Enter a Message:</legend>
+              <textarea
+                value={this.state.message}
+                onChange={this.handleText}
+              >
+              </textarea>
+            </fieldset>
+            <br />
+            <fieldset>
+              <legend>Select which OS(s) you use: </legend>
+              <label>
+                <input type='checkbox' name='checkboxGroup' value='linux'
+                  checked={this.state.checkboxGroup.linux}
+                  onChange={this.handleOSCheck} />
+                &nbsp;Linux
+              </label>
+              <br /><br />
+              <label>
+                <input type='checkbox' name='checkboxGroup' value='windows'
+                  checked={this.state.checkboxGroup.windows}
+                  onChange={this.handleOSCheck} />
+                &nbsp;Windows
+              </label>
+              <br /><br />
+              <label>
+                <input type='checkbox' name='checkboxGroup' value='macOS'
+                  checked={this.state.checkboxGroup.macOS}
+                  onChange={this.handleOSCheck} />
+                &nbsp;Mac OS
+              </label>
+            </fieldset>
+            <br />
+            <fieldset>
+              <legend>Pick one:</legend>
+              <label>
+                <input type='radio' name='radioGroup' value='laptop'
+                  checked={this.state.radioGroup.laptop}
+                  onChange={this.handleCompCheck} />
+                &nbsp;laptop
+              </label>
+              <label>
+                <input type='radio' name='radioGroup' value='desktop'
+                  checked={this.state.radioGroup.desktop}
+                  onChange={this.handleCompCheck} />
+                &nbsp;desktop
+              </label>
+            </fieldset> 
+            <br />
+            <input type='submit' value='Submit' /> 
+          </form>
+          );
+        } // closes render
+      } // closes render
+    }
+
+    const DisplayResults = (props) => {
+      let comp = Object.keys(props.comp)
+      let allOS = ''; let plural = '';
+      for (const [os, isUsed] of Object.entries(props.os)) {
+        if (isUsed) {
+          if (allOS.length === 0) {
+            allOS += os.charAt(0).toUpperCase() + os.slice(1);
+          } 
+          else {
+            allOS += ', ' + os.charAt(0).toUpperCase() + os.slice(1);
+            plural = 's';
+          }
+        }
+      }
+      return (
+        <div>
+          <h1>You use the {allOS} Operating System{plural}. You do your work on a {comp} computer.</h1>
+          <h1>Here is the message you wrote:</h1>
+          <h3>{props.msg}</h3>
+        </div>
+      );
+    }
+
+    ReactDOM.render(
+      <ComputerQuestionaire />,
+      document.getElementById('container')
+    );
+
+    </script>
+  </body>
+</html>
